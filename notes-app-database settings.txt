@@ -1,0 +1,8 @@
+Postgres cluster notes-app-database created
+  Username:    postgres
+  Password:    c1yWYLQtbUgG0sZ
+  Hostname:    notes-app-database.internal
+  Flycast:     fdaa:1:9511:0:1::3
+  Proxy port:  5432
+  Postgres port:  5433
+  Connection string: postgres://postgres:c1yWYLQtbUgG0sZ@notes-app-database.flycast:5432
