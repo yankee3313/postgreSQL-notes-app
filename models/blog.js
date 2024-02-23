@@ -31,3 +31,5 @@ Blog.init({
   timestamps: false,
   modelName: 'blog'
 })
+
+module.exports = Blog
