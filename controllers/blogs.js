@@ -19,7 +19,13 @@ const tokenExtractor = (req, res, next) => {
   }
 
 router.get('/', async (req, res) => {
-    const blogs = await Blog.findAll()
+    const blogs = await Blog.findAll({
+        attributes: { exclude: ['userId'] },
+        include: {
+        model: User,
+        attributes: ['name']
+        }
+    })
   
     console.log(JSON.stringify(blogs))
     res.json(blogs)
@@ -57,11 +63,15 @@ router.put('/:id', blogFinder, async (req, res) => {
     }
 })
 
-router.delete('/:id', blogFinder, async (req, res) => {
+router.delete('/:id', blogFinder, tokenExtractor, async (req, res) => {
     if (req.blog) {
-      await req.blog.destroy()
+        if (req.blog.userId === req.decodedToken.id) {
+            await req.blog.destroy()
+            res.status(204).end()
+        } else {
+            res.status(403).json({error: 'You do not have permssion to delete this'})
+        }
     }
-    res.status(204).end()
-  })
+})
 
 module.exports = router
