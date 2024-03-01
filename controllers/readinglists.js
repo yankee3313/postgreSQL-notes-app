@@ -4,8 +4,7 @@ const { ReadingListBlogs } = require('../models')
   
 router.post('/', async (req, res) => {
     try {
-        const { read_check, ...readingListBlogWithoutReadCheck } = req.body
-        const readingListBlog = await ReadingListBlogs.create(readingListBlogWithoutReadCheck)
+        const readingListBlog = await ReadingListBlogs.create(req.body)
         res.json(readingListBlog)
     }
     catch(error) {
