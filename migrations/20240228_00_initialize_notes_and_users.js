@@ -48,12 +48,12 @@ module.exports = {
             allowNull: false
         },
         created_at: {
-          type: DataTypes.DATE,
-          allowNull: false
+            type: DataTypes.DATE,
+            allowNull: false
         },
         updated_at: {
-          type: DataTypes.DATE,
-          allowNull: false
+            type: DataTypes.DATE,
+            allowNull: false
         }
     })
     await queryInterface.addColumn('blogs', 'user_id', {
