@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize')
 
 module.exports = {
   up: async ({ context: queryInterface }) => {
-    await queryInterface.createTable('user_blogs', {
+    await queryInterface.createTable('reading_list_blogs', {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -18,9 +18,13 @@ module.exports = {
         allowNull: false,
         references: { model: 'blogs', key: 'id' },
       },
+      read_check: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+      }
     })
   },
   down: async ({ context: queryInterface }) => {
-    await queryInterface.dropTable('user_blogs')
+    await queryInterface.dropTable('reading_list_blogs')
   },
 }
