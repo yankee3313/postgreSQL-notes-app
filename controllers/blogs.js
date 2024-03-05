@@ -2,6 +2,7 @@ const router = require('express').Router()
 const { Op } = require('sequelize')
 
 const { Blog, User } = require('../models')
+const Sessions = require('../models/session')
 const { tokenExtractor } = require('../util/middleware')
 
 router.get('/', async (req, res) => {
@@ -39,16 +40,26 @@ router.get('/', async (req, res) => {
 })
   
 router.post('/', tokenExtractor, async (req, res) => {
-        const user = await User.findByPk(req.decodedToken.id)
+    const user = await User.findByPk(req.decodedToken.id)
+    if(user.disabled){
+        return res.status(403).json({error: 'This user is disabled'})
+    } 
+    const session = await Sessions.findOne({
+        where: {
+            userId: req.decodedToken.id,
+            sessionId: req.sessionToken
+        }
+        })
+        if (user && session){
         const currentYear = new Date().getFullYear()
         if (req.body.year < 1991 || req.body.year > currentYear) {
             return res.status(401).json({
                 error: 'Year written must be between 1991 and the current year'
-              })
+            })
         }
         const blog = await Blog.create({...req.body, userId: user.id})
         return res.json(blog)
-        
+    }
 })
 
 const blogFinder = async (req, res, next) => {
@@ -77,14 +88,24 @@ router.put('/:id', blogFinder, async (req, res) => {
 })
 
 router.delete('/:id', blogFinder, tokenExtractor, async (req, res) => {
-    if (req.blog) {
-        if (req.blog.userId === req.decodedToken.id) {
+    const user = await User.findByPk(req.decodedToken.id)
+    if(user.disabled){
+        return res.status(403).json({error: 'This user is disabled'})
+    } 
+    const session = await Sessions.findOne({
+        where: {
+          userId: req.decodedToken.id,
+          sessionId: req.sessionToken
+        }
+      })
+    if (session) {
+        if (req.blog && req.blog.userId === req.decodedToken.id){
             await req.blog.destroy()
             res.status(204).end()
-        } else {
+        }} else {
             res.status(403).json({error: 'You do not have permssion to delete this'})
         }
-    }
+    
 })
 
 module.exports = router

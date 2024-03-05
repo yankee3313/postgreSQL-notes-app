@@ -1,5 +1,4 @@
 const router = require('express').Router()
-const jwt = require('jsonwebtoken')
 
 const { tokenExtractor } = require('../util/middleware')
 
@@ -17,6 +16,9 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', tokenExtractor, async (req, res) => {
     const user = await User.findByPk(req.decodedToken.id)
+    if(user.disabled){
+        return res.status(403).json({error: 'This user is disabled'})
+    }    
     const readingListBlog = await ReadingListBlogs.findByPk(req.params.id)
     if (readingListBlog && user.id === readingListBlog.userId) {
         readingListBlog.readCheck = req.body.readCheck
